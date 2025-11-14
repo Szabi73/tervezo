@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="hu">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Radix Elemzés – HTML nézet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      window.tailwind = window.tailwind || {};
+      window.tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif']
+            }
+          }
+        }
+      };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="font-sans bg-slate-950 text-slate-900">
+    <div class="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-indigo-950">
+      <div
+        class="fixed top-4 right-4 z-50 bg-white rounded-lg shadow-lg p-2 flex gap-2"
+      >
+        <button
+          id="mobileBtn"
+          class="px-3 py-1 rounded text-sm bg-purple-600 text-white"
+        >
+          📱 Mobil
+        </button>
+        <button id="desktopBtn" class="px-3 py-1 rounded text-sm bg-gray-200">
+          💻 Desktop
+        </button>
+      </div>
+
+      <div
+        id="newPersonModal"
+        class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+        role="dialog"
+        aria-modal="true"
+      >
+        <div
+          class="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+        >
+          <div
+            class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4 flex justify-between items-center sticky top-0"
+          >
+            <h3 class="text-lg font-bold">✨ Új Radix készítése</h3>
+            <button
+              id="newPersonClose"
+              class="p-1 bg-white/20 rounded hover:bg-white/30"
+              aria-label="Bezárás"
+            >
+              ✕
+            </button>
+          </div>
+          <div class="p-6 space-y-4">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2"
+                >🧑 Név</label
+              >
+              <input
+                type="text"
+                placeholder="pl. Kiss Anna"
+                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2"
+                >📅 Születési dátum</label
+              >
+              <div class="grid grid-cols-3 gap-2">
+                <input
+                  type="number"
+                  placeholder="Év"
+                  class="px-3 py-3 border-2 border-gray-300 rounded-lg"
+                />
+                <input
+                  type="number"
+                  placeholder="Hó"
+                  class="px-3 py-3 border-2 border-gray-300 rounded-lg"
+                />
+                <input
+                  type="number"
+                  placeholder="Nap"
+                  class="px-3 py-3 border-2 border-gray-300 rounded-lg"
+                />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2"
+                >⏰ Születési idő</label
+              >
+              <div class="grid grid-cols-2 gap-2">
+                <input
+                  type="number"
+                  placeholder="Óra"
+                  class="px-3 py-3 border-2 border-gray-300 rounded-lg"
+                />
+                <input
+                  type="number"
+                  placeholder="Perc"
+                  class="px-3 py-3 border-2 border-gray-300 rounded-lg"
+                />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2"
+                >🌍 Születési hely</label
+              >
+              <input
+                type="text"
+                placeholder="Város"
+                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg"
+              />
+            </div>
+            <div class="flex gap-3 pt-4">
+              <button
+                id="newPersonCancel"
+                class="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-semibold"
+              >
+                Mégse
+              </button>
+              <button
+                id="newPersonCreate"
+                class="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-semibold"
+              >
+                Radix készítése
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="personModal"
+        class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+        role="dialog"
+        aria-modal="true"
+      >
+        <div
+          class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col"
+        >
+          <div class="flex border-b">
+            <button
+              class="flex-1 py-3 font-semibold text-purple-600 border-b-2 border-purple-600"
+            >
+              LISTA
+            </button>
+            <button class="flex-1 py-3 font-semibold text-gray-400">
+              SZŰRŐK
+            </button>
+            <button id="personModalClose" class="px-4" aria-label="Bezárás">
+              ✕
+            </button>
+          </div>
+          <div class="p-4 border-b">
+            <div class="relative">
+              <span
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                aria-hidden="true"
+                >🔍</span
+              >
+              <input
+                id="personSearch"
+                type="text"
+                placeholder="Keresés..."
+                class="w-full pl-10 pr-4 py-2 border rounded-lg"
+              />
+            </div>
+          </div>
+          <div id="personList" class="flex-1 overflow-y-auto divide-y"></div>
+        </div>
+      </div>
+
+      <div
+        id="mainContainer"
+        class="mx-auto bg-white shadow-2xl max-w-sm min-h-screen flex"
+      >
+        <aside
+          id="sidebar"
+          class="w-64 bg-gradient-to-b from-slate-800 to-slate-900 text-white flex-shrink-0 hidden"
+        >
+          <div class="p-4 border-b border-slate-700">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
+                <span aria-hidden="true">👤</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p id="sidebarPersonName" class="font-semibold text-sm truncate"></p>
+                <p id="sidebarPersonDate" class="text-xs text-gray-400 truncate"></p>
+              </div>
+            </div>
+          </div>
+          <nav class="p-2 space-y-1">
+            <button
+              id="sidebarNew"
+              class="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-700 text-sm"
+            >
+              <span aria-hidden="true">➕</span> Új képlet
+            </button>
+            <button
+              id="sidebarOpen"
+              class="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-700 text-sm"
+            >
+              <span aria-hidden="true">📂</span> Megnyitás
+            </button>
+            <button
+              id="sidebarSave"
+              class="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-700 text-sm"
+            >
+              <span aria-hidden="true">💾</span> Mentés
+            </button>
+            <div class="border-t border-slate-700 my-2"></div>
+            <button
+              id="sidebarSettings"
+              class="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-700 text-sm"
+            >
+              <span aria-hidden="true">⚙️</span> Beállítások
+            </button>
+          </nav>
+        </aside>
+
+        <div class="flex-1 flex flex-col">
+          <header class="bg-gradient-to-r from-purple-700 to-indigo-700 text-white p-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <button
+                  id="menuToggle"
+                  class="p-2 bg-white/20 rounded-lg"
+                  aria-label="Menü"
+                >
+                  ☰
+                </button>
+                <div>
+                  <h1 class="text-xl font-bold">Radix Elemzés</h1>
+                  <button
+                    id="personPicker"
+                    class="text-sm opacity-90 hover:opacity-100 flex items-center gap-1"
+                  >
+                    <span id="headerPersonLabel"></span>
+                    <span aria-hidden="true">▾</span>
+                  </button>
+                </div>
+              </div>
+              <div id="desktopToolbar" class="hidden items-center gap-2">
+                <button
+                  id="toolbarNew"
+                  class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition flex items-center gap-2 text-sm"
+                  title="Új képlet"
+                >
+                  <span aria-hidden="true">➕</span>
+                  <span>Új</span>
+                </button>
+                <button
+                  id="toolbarOpen"
+                  class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition flex items-center gap-2 text-sm"
+                  title="Megnyitás"
+                >
+                  <span aria-hidden="true">📂</span>
+                  <span>Betöltés</span>
+                </button>
+                <button
+                  id="toolbarSave"
+                  class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition flex items-center gap-2 text-sm"
+                  title="Mentés"
+                >
+                  <span aria-hidden="true">💾</span>
+                  <span>Mentés</span>
+                </button>
+                <div class="w-px h-8 bg-white/20 mx-1"></div>
+                <button
+                  id="toolbarSettings"
+                  class="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition"
+                  title="Beállítások"
+                >
+                  <span aria-hidden="true">⚙️</span>
+                </button>
+              </div>
+            </div>
+          </header>
+
+          <section
+            id="settingsPanel"
+            class="hidden bg-yellow-50 border-b border-yellow-200 p-4"
+          >
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="font-semibold text-gray-800">♟️ Haladó beállítások</h3>
+              <button id="settingsClose" aria-label="Bezárás">✕</button>
+            </div>
+            <div class="flex gap-2 flex-wrap text-xs">
+              <button class="px-3 py-1 bg-orange-500 text-white rounded">Fényszögek</button>
+              <button class="px-3 py-1 bg-gray-200 rounded">Orbisz</button>
+              <button class="px-3 py-1 bg-gray-200 rounded">Arab Pontok</button>
+            </div>
+          </section>
+
+          <div class="bg-gradient-to-r from-purple-100 to-indigo-100 p-3 text-center border-b">
+            <p class="text-sm text-purple-900">
+              💡 <strong>Tipp:</strong> Kattints bármilyen bolygóra a részletekért!
+            </p>
+          </div>
+
+          <div class="flex-1 flex overflow-hidden">
+            <section
+              id="chartSection"
+              class="flex-1 p-6 overflow-y-auto border-r"
+            >
+              <h2 class="text-lg font-semibold mb-3 text-gray-800">
+                🪐 Születési Radix
+              </h2>
+              <div
+                class="relative bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-8 border-2 border-purple-200 aspect-square flex items-center justify-center max-w-2xl mx-auto"
+              >
+                <div
+                  class="absolute w-32 h-32 bg-white rounded-full border-4 border-purple-300 flex items-center justify-center shadow-lg"
+                >
+                  <span class="text-2xl">☉</span>
+                </div>
+                <div id="planetButtons"></div>
+                <svg
+                  class="absolute inset-0 w-full h-full pointer-events-none"
+                  viewBox="0 0 200 200"
+                >
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="90"
+                    fill="none"
+                    stroke="#d8b4fe"
+                    stroke-width="2"
+                    stroke-dasharray="5,5"
+                  />
+                </svg>
+              </div>
+              <div
+                class="mt-4 p-4 bg-purple-50 rounded-lg border border-purple-200 max-w-2xl mx-auto"
+              >
+                <div class="grid grid-cols-2 gap-2 text-sm">
+                  <div>
+                    <span class="text-gray-600">🌍 Hely:</span>
+                    <p class="font-medium">Budapest</p>
+                  </div>
+                  <div>
+                    <span class="text-gray-600">⏰ Idő:</span>
+                    <p class="font-medium">06:47:00</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <aside id="rightPanel" class="w-96 bg-gray-50 p-6 overflow-y-auto hidden">
+              <div id="desktopPlanetPanel"></div>
+              <div
+                class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 border-2 border-yellow-300 shadow-lg"
+              >
+                <div class="text-center mb-4">
+                  <h3 class="text-lg font-bold text-gray-800 mb-2">💫 Tetszik amit látsz?</h3>
+                  <p class="text-sm text-gray-600 mb-4">Kapd meg a teljes elemzést!</p>
+                </div>
+                <div class="space-y-3">
+                  <button
+                    class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2"
+                  >
+                    <span aria-hidden="true">⬇️</span> Ingyenes letöltés
+                  </button>
+                  <button
+                    class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2"
+                  >
+                    <span aria-hidden="true">🛒</span> Sorskönyv megrendelése
+                  </button>
+                </div>
+                <div class="mt-4 text-center">
+                  <div class="flex items-center justify-center gap-1 text-yellow-500">
+                    <span aria-hidden="true">★</span>
+                    <span aria-hidden="true">★</span>
+                    <span aria-hidden="true">★</span>
+                    <span aria-hidden="true">★</span>
+                    <span aria-hidden="true">★</span>
+                  </div>
+                  <p class="text-xs text-gray-600 mt-1">850+ elégedett ügyfél</p>
+                </div>
+              </div>
+            </aside>
+          </div>
+
+          <footer id="mobileFooter" class="hidden bg-white border-t-2 border-purple-200 p-4 shadow-2xl">
+            <div
+              id="mobilePlanetPanel"
+              class="hidden mb-3 p-3 bg-purple-50 rounded-lg border border-purple-200"
+            ></div>
+            <div class="flex gap-2">
+              <button
+                class="flex-1 bg-green-500 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 text-sm"
+              >
+                <span aria-hidden="true">⬇️</span> Ingyenes
+              </button>
+              <button
+                class="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 text-sm"
+              >
+                <span aria-hidden="true">🛒</span> Sorskönyv
+              </button>
+            </div>
+          </footer>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const savedPersons = [
+        {
+          id: 1,
+          name: 'Ágca',
+          date: '1987.05.05. 14:40:00',
+          location: 'Budapest, Magyarország',
+          count: 16
+        },
+        {
+          id: 2,
+          name: 'Attila',
+          date: '1979.09.04. 05:15:01',
+          location: 'Budapest, Magyarország',
+          count: 8
+        },
+        {
+          id: 3,
+          name: 'Bánffy Szabolcs',
+          date: '1973.01.14. 06:47:00',
+          location: 'Budapest, Magyarország',
+          count: 12
+        }
+      ];
+
+      const planets = [
+        {
+          id: 'mars',
+          name: 'Mars',
+          symbol: '♂',
+          position: 'Nyilasban',
+          house: '11. ház',
+          short: 'Nyilas energia általános ismertetése...',
+          full:
+            'A Mars Nyilasban elhelyezkedése különleges energiát ad. Lelkes, önbizalommal válaszolsz a problémákra.',
+          aspect: 'Mars - Nap: ⚹ 30°'
+        },
+        {
+          id: 'venus',
+          name: 'Vénusz',
+          symbol: '♀',
+          position: 'Bakban',
+          house: '3. ház',
+          short: 'A kapcsolataidban komoly és elkötelezett vagy...',
+          full:
+            'Vénusz a Bakban: értékeled a stabilitást és a hosszú távú elköteleződést.',
+          aspect: 'Vénusz - Hold: ✶ 60°'
+        },
+        {
+          id: 'mercury',
+          name: 'Merkúr',
+          symbol: '☿',
+          position: 'Vízöntőben',
+          house: '5. ház',
+          short: 'Eredeti gondolkodásmód jellemez...',
+          full: 'Merkúr a Vízöntőben: különleges, előremutató gondolkodásmód.',
+          aspect: 'Merkúr - Jupiter: △ 120°'
+        }
+      ];
+
+      const state = {
+        isMobile: true,
+        showSidebar: false,
+        showSettings: false,
+        showPersonModal: false,
+        showNewPersonModal: false,
+        selectedPlanetId: null,
+        showDetails: false,
+        searchTerm: '',
+        currentPersonId: savedPersons[2].id
+      };
+
+      const els = {
+        mobileBtn: document.getElementById('mobileBtn'),
+        desktopBtn: document.getElementById('desktopBtn'),
+        mainContainer: document.getElementById('mainContainer'),
+        sidebar: document.getElementById('sidebar'),
+        menuToggle: document.getElementById('menuToggle'),
+        desktopToolbar: document.getElementById('desktopToolbar'),
+        settingsPanel: document.getElementById('settingsPanel'),
+        rightPanel: document.getElementById('rightPanel'),
+        chartSection: document.getElementById('chartSection'),
+        mobileFooter: document.getElementById('mobileFooter'),
+        mobilePlanetPanel: document.getElementById('mobilePlanetPanel'),
+        desktopPlanetPanel: document.getElementById('desktopPlanetPanel'),
+        personModal: document.getElementById('personModal'),
+        newPersonModal: document.getElementById('newPersonModal'),
+        personList: document.getElementById('personList'),
+        personSearch: document.getElementById('personSearch'),
+        personModalClose: document.getElementById('personModalClose'),
+        sidebarPersonName: document.getElementById('sidebarPersonName'),
+        sidebarPersonDate: document.getElementById('sidebarPersonDate'),
+        headerPersonLabel: document.getElementById('headerPersonLabel'),
+        planetButtons: document.getElementById('planetButtons'),
+        settingsClose: document.getElementById('settingsClose'),
+        personPicker: document.getElementById('personPicker')
+      };
+
+      function getCurrentPerson() {
+        return savedPersons.find((person) => person.id === state.currentPersonId);
+      }
+
+      function getSelectedPlanet() {
+        return planets.find((planet) => planet.id === state.selectedPlanetId) || null;
+      }
+
+      function renderDeviceButtons() {
+        els.mobileBtn.classList.toggle('bg-purple-600', state.isMobile);
+        els.mobileBtn.classList.toggle('text-white', state.isMobile);
+        els.mobileBtn.classList.toggle('bg-gray-200', !state.isMobile);
+        els.mobileBtn.classList.toggle('text-gray-700', !state.isMobile);
+        els.desktopBtn.classList.toggle('bg-purple-600', !state.isMobile);
+        els.desktopBtn.classList.toggle('text-white', !state.isMobile);
+        els.desktopBtn.classList.toggle('bg-gray-200', state.isMobile);
+        els.desktopBtn.classList.toggle('text-gray-700', state.isMobile);
+      }
+
+      function renderLayout() {
+        els.mainContainer.className = `mx-auto bg-white shadow-2xl min-h-screen flex ${
+          state.isMobile ? 'max-w-sm' : 'max-w-7xl'
+        }`;
+        if (!state.isMobile) {
+          state.showSidebar = true;
+        }
+        els.sidebar.classList.toggle('hidden', !state.showSidebar);
+        els.menuToggle.classList.toggle('hidden', !state.isMobile);
+        els.desktopToolbar.classList.toggle('hidden', state.isMobile);
+        els.rightPanel.classList.toggle('hidden', state.isMobile);
+        els.chartSection.classList.toggle('border-r', !state.isMobile);
+        els.mobileFooter.classList.toggle('hidden', !state.isMobile);
+      }
+
+      function renderSettingsPanel() {
+        els.settingsPanel.classList.toggle('hidden', !state.showSettings);
+      }
+
+      function renderCurrentPerson() {
+        const current = getCurrentPerson();
+        if (!current) {
+          return;
+        }
+        els.sidebarPersonName.textContent = current.name;
+        els.sidebarPersonDate.textContent = current.date;
+        els.headerPersonLabel.textContent = `${current.name} • ${current.date.split(' ')[0]}`;
+      }
+
+      function renderPersonList() {
+        const list = savedPersons.filter((person) =>
+          person.name.toLowerCase().includes(state.searchTerm.toLowerCase())
+        );
+        if (!list.length) {
+          els.personList.innerHTML =
+            '<div class="p-6 text-center text-sm text-gray-500">Nincs találat.</div>';
+          return;
+        }
+        els.personList.innerHTML = list
+          .map(
+            (person) => `
+              <button
+                data-person-id="${person.id}"
+                class="w-full p-4 hover:bg-purple-50 text-left"
+              >
+                <h4 class="font-semibold">${person.name}</h4>
+                <p class="text-sm text-gray-600">${person.date}</p>
+                <p class="text-xs text-gray-500">${person.location}</p>
+              </button>
+            `
+          )
+          .join('');
+        els.personList.querySelectorAll('button').forEach((button) => {
+          button.addEventListener('click', () => {
+            state.currentPersonId = Number(button.dataset.personId);
+            state.showPersonModal = false;
+            render();
+          });
+        });
+      }
+
+      function renderPlanetButtons() {
+        els.planetButtons.innerHTML = '';
+        planets.forEach((planet, index) => {
+          const angle = (index / planets.length) * Math.PI * 2;
+          const radius = state.isMobile ? 80 : 100;
+          const x = Math.cos(angle) * radius;
+          const y = Math.sin(angle) * radius;
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.dataset.planetId = planet.id;
+          button.className = `absolute w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-all duration-300 ${
+            state.selectedPlanetId === planet.id
+              ? 'bg-yellow-300 shadow-2xl ring-4 ring-yellow-400 scale-110'
+              : 'bg-purple-300 hover:bg-purple-400 shadow-lg'
+          }`;
+          button.style.left = `calc(50% + ${x}px)`;
+          button.style.top = `calc(50% + ${y}px)`;
+          button.style.transform = 'translate(-50%, -50%)';
+          button.textContent = planet.symbol;
+          button.addEventListener('click', () => {
+            state.selectedPlanetId = planet.id;
+            state.showDetails = false;
+            render();
+          });
+          els.planetButtons.appendChild(button);
+        });
+      }
+
+      function renderPlanetPanels() {
+        const planet = getSelectedPlanet();
+        if (planet && !state.isMobile) {
+          els.desktopPlanetPanel.innerHTML = `
+            <div class="bg-white rounded-xl shadow-lg border-2 border-purple-200 overflow-hidden mb-4">
+              <div class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h3 class="text-xl font-bold">${planet.name} ${planet.symbol}</h3>
+                    <p class="text-sm opacity-90">${planet.position} • ${planet.house}</p>
+                  </div>
+                  <button class="p-1 bg-white/20 rounded" aria-label="Bezárás">✕</button>
+                </div>
+              </div>
+              <div class="p-4 space-y-3">
+                <p class="text-gray-700 text-sm">${
+                  state.showDetails ? planet.full : planet.short
+                }</p>
+                <p class="text-sm font-medium text-purple-700">${planet.aspect}</p>
+                <button class="text-purple-600 text-sm font-medium flex items-center gap-1">
+                  ${state.showDetails ? 'Bezárás ▴' : 'Teljes leírás ▾'}
+                </button>
+              </div>
+            </div>
+          `;
+          const [closeBtn, toggleBtn] = els.desktopPlanetPanel.querySelectorAll('button');
+          closeBtn.addEventListener('click', () => {
+            state.selectedPlanetId = null;
+            render();
+          });
+          toggleBtn.addEventListener('click', () => {
+            state.showDetails = !state.showDetails;
+            render();
+          });
+        } else if (!planet && !state.isMobile) {
+          els.desktopPlanetPanel.innerHTML = `
+            <div class="bg-white rounded-xl p-8 text-center border-2 border-dashed border-purple-300 mb-4">
+              <span class="text-6xl mb-4 block" aria-hidden="true">🪐</span>
+              <p class="text-gray-600 text-sm">Válassz egy bolygót!</p>
+            </div>
+          `;
+        } else {
+          els.desktopPlanetPanel.innerHTML = '';
+        }
+
+        if (state.isMobile) {
+          const panel = els.mobilePlanetPanel;
+          if (planet) {
+            panel.classList.remove('hidden');
+            panel.innerHTML = `
+              <div class="flex items-center justify-between mb-2">
+                <div>
+                  <h4 class="font-bold text-sm">${planet.name} ${planet.symbol}</h4>
+                  <p class="text-xs text-gray-600">${planet.position}</p>
+                </div>
+                <button aria-label="Bezárás">✕</button>
+              </div>
+              <p class="text-xs text-gray-700 mb-2">${
+                state.showDetails ? planet.full : planet.short
+              }</p>
+              <p class="text-xs font-medium text-purple-700 mb-2">${planet.aspect}</p>
+              <button class="text-purple-600 text-xs font-medium">${
+                state.showDetails ? 'Kevesebb' : 'Több'
+              }</button>
+            `;
+            const [closeBtn, toggleBtn] = panel.querySelectorAll('button');
+            closeBtn.addEventListener('click', () => {
+              state.selectedPlanetId = null;
+              render();
+            });
+            toggleBtn.addEventListener('click', () => {
+              state.showDetails = !state.showDetails;
+              render();
+            });
+          } else {
+            panel.classList.add('hidden');
+            panel.innerHTML = '';
+          }
+        }
+      }
+
+      function renderModals() {
+        els.personModal.classList.toggle('hidden', !state.showPersonModal);
+        els.newPersonModal.classList.toggle('hidden', !state.showNewPersonModal);
+      }
+
+      function render() {
+        renderDeviceButtons();
+        renderLayout();
+        renderSettingsPanel();
+        renderCurrentPerson();
+        renderPersonList();
+        renderPlanetButtons();
+        renderPlanetPanels();
+        renderModals();
+      }
+
+      els.mobileBtn.addEventListener('click', () => {
+        state.isMobile = true;
+        state.showSidebar = false;
+        render();
+      });
+
+      els.desktopBtn.addEventListener('click', () => {
+        state.isMobile = false;
+        state.showSidebar = true;
+        render();
+      });
+
+      els.menuToggle.addEventListener('click', () => {
+        state.showSidebar = !state.showSidebar;
+        render();
+      });
+
+      document.getElementById('sidebarNew').addEventListener('click', () => {
+        state.showNewPersonModal = true;
+        render();
+      });
+
+      document.getElementById('sidebarOpen').addEventListener('click', () => {
+        state.showPersonModal = true;
+        render();
+      });
+
+      document.getElementById('sidebarSave').addEventListener('click', () => {
+        alert('Mentve! (Demo)');
+      });
+
+      document.getElementById('sidebarSettings').addEventListener('click', () => {
+        state.showSettings = !state.showSettings;
+        render();
+      });
+
+      document.getElementById('toolbarNew').addEventListener('click', () => {
+        state.showNewPersonModal = true;
+        render();
+      });
+
+      document.getElementById('toolbarOpen').addEventListener('click', () => {
+        state.showPersonModal = true;
+        render();
+      });
+
+      document.getElementById('toolbarSave').addEventListener('click', () => {
+        alert('Mentve! (Demo)');
+      });
+
+      document.getElementById('toolbarSettings').addEventListener('click', () => {
+        state.showSettings = !state.showSettings;
+        render();
+      });
+
+      els.personPicker.addEventListener('click', () => {
+        state.showPersonModal = true;
+        render();
+      });
+
+      els.personModalClose.addEventListener('click', () => {
+        state.showPersonModal = false;
+        render();
+      });
+
+      els.personSearch.addEventListener('input', (event) => {
+        state.searchTerm = event.target.value;
+        renderPersonList();
+      });
+
+      document.getElementById('newPersonClose').addEventListener('click', () => {
+        state.showNewPersonModal = false;
+        render();
+      });
+
+      document.getElementById('newPersonCancel').addEventListener('click', () => {
+        state.showNewPersonModal = false;
+        render();
+      });
+
+      document.getElementById('newPersonCreate').addEventListener('click', () => {
+        alert('Demo módban nincs mentés.');
+        state.showNewPersonModal = false;
+        render();
+      });
+
+      els.settingsClose.addEventListener('click', () => {
+        state.showSettings = false;
+        render();
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          if (state.showPersonModal || state.showNewPersonModal) {
+            state.showPersonModal = false;
+            state.showNewPersonModal = false;
+            render();
+          }
+        }
+      });
+
+      render();
+    </script>
+  </body>
+</html>

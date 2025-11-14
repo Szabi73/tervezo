@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="hu">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Radix Elemzés Felület</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      window.tailwind = window.tailwind || {};
+      window.tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif']
+            }
+          }
+        }
+      };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
+  </head>
+  <body class="font-sans bg-slate-950 text-slate-900">
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const IconBase = ({ children, size = 20, className = '', strokeWidth = 2, ...rest }) => (
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={className}
+          {...rest}
+        >
+          {children}
+        </svg>
+      );
+
+      const XIcon = (props) => (
+        <IconBase {...props}>
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </IconBase>
+      );
+
+      const ChevronDownIcon = (props) => (
+        <IconBase {...props}>
+          <polyline points="6 9 12 15 18 9" />
+        </IconBase>
+      );
+
+      const ChevronUpIcon = (props) => (
+        <IconBase {...props}>
+          <polyline points="6 15 12 9 18 15" />
+        </IconBase>
+      );
+
+      const SettingsIcon = (props) => (
+        <IconBase {...props}>
+          <circle cx="12" cy="12" r="3" />
+          <path d="M12 2v2" />
+          <path d="M12 20v2" />
+          <path d="M4.93 4.93l1.41 1.41" />
+          <path d="M17.66 17.66l1.41 1.41" />
+          <path d="M2 12h2" />
+          <path d="M20 12h2" />
+          <path d="M6.34 17.66l-1.41 1.41" />
+          <path d="M19.07 4.93l-1.41 1.41" />
+        </IconBase>
+      );
+
+      const DownloadIcon = (props) => (
+        <IconBase {...props}>
+          <path d="M12 5v14" />
+          <polyline points="19 12 12 19 5 12" />
+          <path d="M5 19h14" />
+        </IconBase>
+      );
+
+      const ShoppingCartIcon = (props) => (
+        <IconBase {...props}>
+          <circle cx="9" cy="20" r="1" />
+          <circle cx="17" cy="20" r="1" />
+          <path d="M3 4h2l3 12h10l2-8H6" />
+        </IconBase>
+      );
+
+      const StarIcon = ({ filled = false, ...props }) => (
+        <IconBase {...props} fill={filled ? 'currentColor' : 'none'} strokeWidth={filled ? 0 : 2}>
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </IconBase>
+      );
+
+      const MenuIcon = (props) => (
+        <IconBase {...props}>
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </IconBase>
+      );
+
+      const UserIcon = (props) => (
+        <IconBase {...props}>
+          <circle cx="12" cy="7" r="4" />
+          <path d="M6 21v-1a6 6 0 0 1 12 0v1" />
+        </IconBase>
+      );
+
+      const PlusIcon = (props) => (
+        <IconBase {...props}>
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </IconBase>
+      );
+
+      const FolderOpenIcon = (props) => (
+        <IconBase {...props}>
+          <path d="M3 19V6a2 2 0 0 1 2-2h5l2 2h9a2 2 0 0 1 2 2v2" />
+          <path d="M3 19h13a2 2 0 0 0 1.9-1.37L20 11H8l-2 6" />
+        </IconBase>
+      );
+
+      const SaveIcon = (props) => (
+        <IconBase {...props}>
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+          <polyline points="17 21 17 13 7 13 7 21" />
+          <polyline points="7 3 7 8 15 8" />
+        </IconBase>
+      );
+
+      const SearchIcon = (props) => (
+        <IconBase {...props}>
+          <circle cx="11" cy="11" r="7" />
+          <line x1="20" y1="20" x2="16.65" y2="16.65" />
+        </IconBase>
+      );
+
+      const savedPersons = [
+        {
+          id: 1,
+          name: 'Ágca',
+          date: '1987.05.05. 14:40:00',
+          location: 'Budapest, Magyarország',
+          count: 16
+        },
+        {
+          id: 2,
+          name: 'Attila',
+          date: '1979.09.04. 05:15:01',
+          location: 'Budapest, Magyarország',
+          count: 8
+        },
+        {
+          id: 3,
+          name: 'Bánffy Szabolcs',
+          date: '1973.01.14. 06:47:00',
+          location: 'Budapest, Magyarország',
+          count: 12
+        }
+      ];
+
+      const planets = [
+        {
+          id: 'mars',
+          name: 'Mars',
+          symbol: '♂',
+          position: 'Nyilasban',
+          house: '11. ház',
+          short: 'A Mars Nyilasban tüzes, lelkes energiát ad és ösztönöz a felfedezésre.',
+          full: 'A Mars Nyilasban elhelyezkedése különleges energiát ad. Lelkes, önbizalommal teli válaszokat adsz a problémákra és bátran keresed az új kihívásokat.',
+          aspect: 'Mars - Nap: ✶ 30°'
+        },
+        {
+          id: 'venus',
+          name: 'Vénusz',
+          symbol: '♀',
+          position: 'Bakban',
+          house: '3. ház',
+          short: 'Kapcsolataidban komoly és elkötelezett vagy, értékeled a stabilitást.',
+          full: 'A Vénusz a Bakban a hosszú távú elkötelződésre és a felelősségvállalásra ösztönöz. A hűség, a megbízhatóság és a tartalmas kommunikáció hangsúlyos.',
+          aspect: 'Vénusz - Hold: ✹ 60°'
+        },
+        {
+          id: 'mercury',
+          name: 'Merkúr',
+          symbol: '☿',
+          position: 'Vízöntőben',
+          house: '5. ház',
+          short: 'Eredeti gondolkodásmód és játékos kreativitás jellemez.',
+          full: 'A Merkúr a Vízöntőben előremutató, innovatív gondolkodásra sarkall. Könnyedén hozol létre új ötleteket és élvezed az alkotás szabadságát.',
+          aspect: 'Merkúr - Jupiter: △ 120°'
+        }
+      ];
+
+      const RadixMockup = () => {
+        const [selectedPlanet, setSelectedPlanet] = React.useState(null);
+        const [showDetails, setShowDetails] = React.useState(false);
+        const [showSettings, setShowSettings] = React.useState(false);
+        const [isMobile, setIsMobile] = React.useState(true);
+        const [showSidebar, setShowSidebar] = React.useState(false);
+        const [showPersonModal, setShowPersonModal] = React.useState(false);
+        const [showNewPersonModal, setShowNewPersonModal] = React.useState(false);
+        const [currentPerson, setCurrentPerson] = React.useState(savedPersons[2]);
+        const [searchTerm, setSearchTerm] = React.useState('');
+
+        const filteredPersons = React.useMemo(
+          () =>
+            savedPersons.filter((person) =>
+              person.name.toLowerCase().includes(searchTerm.toLowerCase())
+            ),
+          [searchTerm]
+        );
+
+        const handleSelectPlanet = (planet) => {
+          setSelectedPlanet(planet);
+          setShowDetails(false);
+        };
+
+        const handleToggleDevice = (mobile) => {
+          setIsMobile(mobile);
+          setShowSidebar(mobile ? false : true);
+        };
+
+        const handleCloseModals = () => {
+          setShowPersonModal(false);
+          setShowNewPersonModal(false);
+        };
+
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-indigo-950 p-4">
+            <div className="fixed top-4 right-4 z-50 bg-white/90 rounded-lg shadow-lg p-2 flex gap-2">
+              <button
+                onClick={() => handleToggleDevice(true)}
+                className={`px-3 py-1 rounded text-sm transition ${
+                  isMobile
+                    ? 'bg-purple-600 text-white shadow'
+                    : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                📱 Mobil
+              </button>
+              <button
+                onClick={() => handleToggleDevice(false)}
+                className={`px-3 py-1 rounded text-sm transition ${
+                  !isMobile
+                    ? 'bg-purple-600 text-white shadow'
+                    : 'bg-gray-200 text-gray-700'
+                }`}
+              >
+                💻 Desktop
+              </button>
+            </div>
+
+            {showNewPersonModal && (
+              <div
+                className="fixed inset-0 z-40 flex items-center justify-center p-4"
+                style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+              >
+                <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg" style={{ maxHeight: '90vh' }}>
+                  <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4 flex justify-between items-center sticky top-0">
+                    <h3 className="text-lg font-semibold">✨ Új radix készítése</h3>
+                    <button
+                      onClick={() => setShowNewPersonModal(false)}
+                      className="p-1 rounded bg-white/20 hover:bg-white/30"
+                    >
+                      <XIcon size={20} />
+                    </button>
+                  </div>
+                  <div className="p-6 space-y-4 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 64px)' }}>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">🧑 Név</label>
+                      <input
+                        type="text"
+                        placeholder="pl. Kiss Anna"
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">📅 Születési dátum</label>
+                      <div className="grid grid-cols-3 gap-2">
+                        <input type="number" placeholder="Év" className="px-3 py-3 border-2 border-gray-300 rounded-lg" />
+                        <input type="number" placeholder="Hó" className="px-3 py-3 border-2 border-gray-300 rounded-lg" />
+                        <input type="number" placeholder="Nap" className="px-3 py-3 border-2 border-gray-300 rounded-lg" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">🕐 Születési idő</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <input type="number" placeholder="Óra" className="px-3 py-3 border-2 border-gray-300 rounded-lg" />
+                        <input type="number" placeholder="Perc" className="px-3 py-3 border-2 border-gray-300 rounded-lg" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">📍 Születési hely</label>
+                      <input type="text" placeholder="Város" className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg" />
+                    </div>
+                    <div className="flex gap-3 pt-4">
+                      <button
+                        onClick={() => setShowNewPersonModal(false)}
+                        className="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-semibold"
+                      >
+                        Mégse
+                      </button>
+                      <button
+                        onClick={() => setShowNewPersonModal(false)}
+                        className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-semibold"
+                      >
+                        Radix készítése
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {showPersonModal && (
+              <div
+                className="fixed inset-0 z-40 flex items-center justify-center p-4"
+                style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+              >
+                <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl flex flex-col" style={{ maxHeight: '80vh' }}>
+                  <div className="flex border-b">
+                    <button className="flex-1 py-3 font-semibold text-purple-600 border-b-2 border-purple-600">LISTA</button>
+                    <button className="flex-1 py-3 font-semibold text-gray-400" disabled>SZŰRŐK</button>
+                    <button onClick={() => setShowPersonModal(false)} className="px-4">
+                      <XIcon size={20} />
+                    </button>
+                  </div>
+                  <div className="p-4 border-b">
+                    <div className="relative">
+                      <SearchIcon size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder="Keresés..."
+                        value={searchTerm}
+                        onChange={(event) => setSearchTerm(event.target.value)}
+                        className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex-1 overflow-y-auto divide-y">
+                    {filteredPersons.map((person) => (
+                      <button
+                        key={person.id}
+                        onClick={() => {
+                          setCurrentPerson(person);
+                          handleCloseModals();
+                        }}
+                        className="w-full p-4 text-left hover:bg-purple-50"
+                      >
+                        <h4 className="font-semibold">{person.name}</h4>
+                        <p className="text-sm text-gray-600">{person.date}</p>
+                        <p className="text-xs text-gray-500">{person.location}</p>
+                      </button>
+                    ))}
+                    {filteredPersons.length === 0 && (
+                      <div className="p-6 text-center text-sm text-gray-500">Nincs találat.</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div
+              className={`mx-auto bg-white shadow-2xl ${
+                isMobile ? 'max-w-sm' : 'max-w-7xl'
+              } min-h-screen flex flex-col lg:flex-row`}
+            >
+              {(!isMobile || showSidebar) ? (
+                <div className="w-64 bg-gradient-to-b from-slate-800 to-slate-900 text-white flex-shrink-0">
+                  <div className="p-4 border-b border-slate-700">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
+                        <UserIcon size={24} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm truncate">{currentPerson.name}</p>
+                        <p className="text-xs text-gray-400 truncate">{currentPerson.date}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <nav className="p-2 space-y-1">
+                    <button
+                      onClick={() => setShowNewPersonModal(true)}
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-700 text-sm transition"
+                    >
+                      <PlusIcon size={16} /> Új képlet
+                    </button>
+                    <button
+                      onClick={() => setShowPersonModal(true)}
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-700 text-sm transition"
+                    >
+                      <FolderOpenIcon size={16} /> Megnyitás
+                    </button>
+                    <button className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-700 text-sm transition">
+                      <SaveIcon size={16} /> Mentés
+                    </button>
+                    <div className="border-t border-slate-700 my-2"></div>
+                    <button
+                      onClick={() => setShowSettings(!showSettings)}
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-700 text-sm transition"
+                    >
+                      <SettingsIcon size={16} /> Beállítások
+                    </button>
+                  </nav>
+                </div>
+              ) : null}
+
+              <div className="flex-1 flex flex-col">
+                <div className="bg-gradient-to-r from-purple-700 to-indigo-700 text-white p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      {isMobile && (
+                        <button
+                          onClick={() => setShowSidebar(!showSidebar)}
+                          className="p-2 bg-white/20 rounded-lg"
+                        >
+                          <MenuIcon size={20} />
+                        </button>
+                      )}
+                      <div>
+                        <h1 className="text-xl font-bold">Radix elemzés</h1>
+                        <button
+                          onClick={() => setShowPersonModal(true)}
+                          className="text-sm opacity-90 hover:opacity-100 flex items-center gap-1"
+                        >
+                          {currentPerson.name} • {currentPerson.date.split(' ')[0]}
+                          <ChevronDownIcon size={14} />
+                        </button>
+                      </div>
+                    </div>
+                    {!isMobile && (
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setShowNewPersonModal(true)}
+                          className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition flex items-center gap-2 text-sm"
+                          title="Új képlet"
+                        >
+                          <PlusIcon size={20} />
+                          <span>Új</span>
+                        </button>
+                        <button
+                          onClick={() => setShowPersonModal(true)}
+                          className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition flex items-center gap-2 text-sm"
+                          title="Megnyitás"
+                        >
+                          <FolderOpenIcon size={20} />
+                          <span>Betöltés</span>
+                        </button>
+                        <button
+                          className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition flex items-center gap-2 text-sm"
+                          title="Mentés"
+                        >
+                          <SaveIcon size={20} />
+                          <span>Mentés</span>
+                        </button>
+                        <div className="w-px h-8 bg-white/30" aria-hidden="true"></div>
+                        <button
+                          onClick={() => setShowSettings(!showSettings)}
+                          className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition"
+                          title="Beállítások"
+                        >
+                          <SettingsIcon size={20} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {showSettings && (
+                  <div className="bg-yellow-50 border-b border-yellow-200 p-4">
+                    <div className="flex justify-between items-center mb-3">
+                      <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                        ♑️ Haladó beállítások
+                      </h3>
+                      <button onClick={() => setShowSettings(false)}>
+                        <XIcon size={20} />
+                      </button>
+                    </div>
+                    <div className="flex gap-2 flex-wrap">
+                      <button className="px-3 py-1 bg-orange-500 text-white rounded text-xs">Fényszögek</button>
+                      <button className="px-3 py-1 bg-gray-200 rounded text-xs">Orbisz</button>
+                      <button className="px-3 py-1 bg-gray-200 rounded text-xs">Arab pontok</button>
+                    </div>
+                  </div>
+                )}
+
+                <div className="bg-gradient-to-r from-purple-100 to-indigo-100 p-3 text-center border-b border-purple-200">
+                  <p className="text-sm text-purple-900">
+                    🌟 <strong>Tipp:</strong> Kattints bármelyik bolygóra a részletekért!
+                  </p>
+                </div>
+
+                <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+                  <div className={`flex-1 p-6 overflow-y-auto ${!isMobile ? 'lg:border-r lg:border-gray-200' : ''}`}>
+                    <h2 className="text-lg font-semibold mb-3 text-gray-800">🪐 Születési radix</h2>
+                    <div className="relative bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-8 border-2 border-purple-200 aspect-square max-w-2xl mx-auto flex items-center justify-center">
+                      <div className="absolute w-32 h-32 bg-white rounded-full border-4 border-purple-300 flex items-center justify-center shadow-lg">
+                        <span className="text-2xl">☉</span>
+                      </div>
+                      {planets.map((planet, index) => {
+                        const angle = (index * (360 / planets.length)) * (Math.PI / 180);
+                        const radius = isMobile ? 80 : 110;
+                        const x = Math.cos(angle) * radius;
+                        const y = Math.sin(angle) * radius;
+                        const isActive = selectedPlanet?.id === planet.id;
+                        return (
+                          <button
+                            key={planet.id}
+                            onClick={() => handleSelectPlanet(planet)}
+                            className={`absolute w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-all duration-300 ${
+                              isActive
+                                ? 'bg-yellow-300 text-yellow-900 shadow-2xl ring-4 ring-yellow-400 scale-110'
+                                : 'bg-purple-300 hover:bg-purple-400 text-purple-900 shadow-lg'
+                            }`}
+                            style={{
+                              left: `calc(50% + ${x}px)`,
+                              top: `calc(50% + ${y}px)`,
+                              transform: 'translate(-50%, -50%)'
+                            }}
+                            aria-pressed={isActive}
+                          >
+                            {planet.symbol}
+                          </button>
+                        );
+                      })}
+                      <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 200 200">
+                        <circle cx="100" cy="100" r="90" fill="none" stroke="#d8b4fe" strokeWidth="2" strokeDasharray="5 5" />
+                      </svg>
+                    </div>
+                    <div className="mt-4 p-4 bg-purple-50 rounded-lg border border-purple-200 max-w-2xl mx-auto">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-gray-600 block">📍 Hely:</span>
+                          <p className="font-medium text-gray-800">Budapest</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-600 block">🕐 Idő:</span>
+                          <p className="font-medium text-gray-800">06:47:00</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {!isMobile && (
+                    <div className="w-full lg:w-96 bg-gray-50 p-6 overflow-y-auto border-t lg:border-t-0">
+                      {selectedPlanet ? (
+                        <div className="bg-white rounded-xl shadow-lg border-2 border-purple-200 overflow-hidden mb-4">
+                          <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4 flex items-center justify-between">
+                            <div>
+                              <h3 className="text-xl font-bold">{selectedPlanet.name}</h3>
+                              <p className="text-sm opacity-90">
+                                {selectedPlanet.position} • {selectedPlanet.house}
+                              </p>
+                            </div>
+                            <button onClick={() => setSelectedPlanet(null)} className="p-1 bg-white/20 rounded">
+                              <XIcon size={20} />
+                            </button>
+                          </div>
+                          <div className="p-4 space-y-3 text-sm text-gray-700">
+                            <p>{showDetails ? selectedPlanet.full : selectedPlanet.short}</p>
+                            <p className="text-purple-600 font-medium">{selectedPlanet.aspect}</p>
+                            {!showDetails ? (
+                              <button
+                                onClick={() => setShowDetails(true)}
+                                className="text-purple-600 text-sm font-medium flex items-center gap-1"
+                              >
+                                Teljes leírás <ChevronDownIcon size={16} />
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => setShowDetails(false)}
+                                className="text-purple-600 text-sm font-medium flex items-center gap-1"
+                              >
+                                Bezárás <ChevronUpIcon size={16} />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="bg-white rounded-xl p-8 text-center border-2 border-dashed border-purple-300 mb-4">
+                          <span className="text-6xl mb-4 block">🪐</span>
+                          <p className="text-gray-600 text-sm">Válassz egy bolygót!</p>
+                        </div>
+                      )}
+
+                      <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 border-2 border-yellow-300 shadow-lg">
+                        <div className="text-center mb-4">
+                          <h3 className="text-lg font-bold text-gray-800 mb-2">🎁 Tetszik amit látsz?</h3>
+                          <p className="text-sm text-gray-600 mb-4">Kérd a teljes elemzést!</p>
+                        </div>
+                        <div className="space-y-3">
+                          <button className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2">
+                            <DownloadIcon size={20} /> Ingyenes letöltés
+                          </button>
+                          <button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2">
+                            <ShoppingCartIcon size={20} /> Sorskönyv megrendelése
+                          </button>
+                        </div>
+                        <div className="mt-4 text-center">
+                          <div className="flex items-center justify-center gap-1 text-yellow-500">
+                            {Array.from({ length: 5 }).map((_, index) => (
+                              <StarIcon key={index} size={16} filled />
+                            ))}
+                          </div>
+                          <p className="text-xs text-gray-600 mt-1">850+ elégedett ügyfél</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {isMobile && (
+                  <div className="bg-white border-t-2 border-purple-200 p-4 shadow-2xl space-y-3">
+                    {selectedPlanet && (
+                      <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
+                        <div className="flex items-center justify-between mb-2">
+                          <div>
+                            <h4 className="font-bold text-sm">{selectedPlanet.name}</h4>
+                            <p className="text-xs text-gray-600">{selectedPlanet.position}</p>
+                          </div>
+                          <button onClick={() => setSelectedPlanet(null)}>
+                            <XIcon size={18} />
+                          </button>
+                        </div>
+                        <p className="text-xs text-gray-700 mb-2">
+                          {showDetails ? selectedPlanet.full : selectedPlanet.short}
+                        </p>
+                        <button
+                          onClick={() => setShowDetails(!showDetails)}
+                          className="text-purple-600 text-xs font-medium"
+                        >
+                          {showDetails ? 'Kevesebb' : 'Több'}
+                        </button>
+                      </div>
+                    )}
+                    <div className="flex gap-2">
+                      <button className="flex-1 bg-green-500 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 text-sm">
+                        <DownloadIcon size={18} /> Ingyenes
+                      </button>
+                      <button className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 text-sm">
+                        <ShoppingCartIcon size={18} /> Sorskönyv
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<RadixMockup />);
+    </script>
+  </body>
+</html>
