@@ -141,6 +141,23 @@
         </IconBase>
       );
 
+      const NoteIcon = (props) => (
+        <IconBase {...props}>
+          <path d="M15 2H6a2 2 0 0 0-2 2v16l4-4h7a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z" />
+          <line x1="8" y1="9" x2="12" y2="9" />
+          <line x1="8" y1="13" x2="14" y2="13" />
+        </IconBase>
+      );
+
+      const PrinterIcon = (props) => (
+        <IconBase {...props}>
+          <path d="M6 9V2h12v7" />
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+          <rect x="6" y="14" width="12" height="8" rx="2" />
+          <path d="M8 6h8" />
+        </IconBase>
+      );
+
       const SearchIcon = (props) => (
         <IconBase {...props}>
           <circle cx="11" cy="11" r="7" />
@@ -511,6 +528,12 @@
                     <button className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-700 text-sm transition">
                       <SaveIcon size={16} /> Mentés
                     </button>
+                    <button className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-700 text-sm transition">
+                      <NoteIcon size={16} /> Jegyzet
+                    </button>
+                    <button className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-700 text-sm transition">
+                      <PrinterIcon size={16} /> Nyomtatás
+                    </button>
                     <div className="border-t border-slate-700 my-2"></div>
                     <button
                       onClick={() => setShowSettings(!showSettings)}
@@ -569,6 +592,20 @@
                         >
                           <SaveIcon size={20} />
                           <span>Mentés</span>
+                        </button>
+                        <button
+                          className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition flex items-center gap-2 text-sm"
+                          title="Jegyzet"
+                        >
+                          <NoteIcon size={20} />
+                          <span>Jegyzet</span>
+                        </button>
+                        <button
+                          className="p-2 bg-white/20 rounded-lg hover:bg-white/30 transition flex items-center gap-2 text-sm"
+                          title="Nyomtatás"
+                        >
+                          <PrinterIcon size={20} />
+                          <span>Nyomtatás</span>
                         </button>
                         <div className="w-px h-8 bg-white/30" aria-hidden="true"></div>
                         <button
