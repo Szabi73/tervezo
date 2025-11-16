@@ -185,13 +185,6 @@
         id="mainContainer"
         class="relative mx-auto bg-white shadow-2xl max-w-sm min-h-screen flex"
       >
-        <button
-          id="sidebarReveal"
-          class="hidden absolute left-0 top-6 lg:top-1/2 -translate-x-1/2 lg:-translate-y-1/2 bg-slate-800 text-white px-3 py-2 rounded-r-xl shadow-2xl flex items-center gap-2 text-sm font-semibold"
-          aria-label="Menü megnyitása"
-        >
-          ☰ Menü
-        </button>
         <aside
           id="sidebar"
           class="w-64 bg-gradient-to-b from-slate-800 to-slate-900 text-white flex-shrink-0 hidden"
@@ -263,10 +256,11 @@
               <div class="flex items-center gap-3">
                 <button
                   id="menuToggle"
-                  class="p-2 bg-white/20 rounded-lg"
+                  class="p-2 bg-white/20 rounded-lg flex items-center gap-2"
                   aria-label="Menü"
                 >
-                  ☰
+                  <span aria-hidden="true">☰</span>
+                  <span id="menuToggleLabel" class="hidden text-sm font-semibold">Menü</span>
                 </button>
                 <div>
                   <h1 class="text-xl font-bold">Radix Elemzés</h1>
@@ -556,8 +550,8 @@
         desktopBtn: document.getElementById('desktopBtn'),
         mainContainer: document.getElementById('mainContainer'),
         sidebar: document.getElementById('sidebar'),
-        sidebarReveal: document.getElementById('sidebarReveal'),
         menuToggle: document.getElementById('menuToggle'),
+        menuToggleLabel: document.getElementById('menuToggleLabel'),
         desktopToolbar: document.getElementById('desktopToolbar'),
         settingsPanel: document.getElementById('settingsPanel'),
         rightPanel: document.getElementById('rightPanel'),
@@ -602,8 +596,9 @@
           state.isMobile ? 'flex-col max-w-sm' : 'flex-row max-w-7xl'
         }`;
         els.sidebar.classList.toggle('hidden', !state.showSidebar);
-        els.sidebarReveal.classList.toggle('hidden', state.showSidebar);
-        els.menuToggle.classList.toggle('hidden', !state.isMobile);
+        const showMenuToggle = state.isMobile || (!state.isMobile && !state.showSidebar);
+        els.menuToggle.classList.toggle('hidden', !showMenuToggle);
+        els.menuToggleLabel.classList.toggle('hidden', state.isMobile);
         els.desktopToolbar.classList.toggle('hidden', state.isMobile);
         els.rightPanel.classList.toggle('hidden', state.isMobile);
         els.chartSection.classList.toggle('border-r', !state.isMobile);
@@ -869,17 +864,12 @@
       });
 
       els.menuToggle.addEventListener('click', () => {
-        state.showSidebar = !state.showSidebar;
+        state.showSidebar = state.isMobile ? !state.showSidebar : true;
         render();
       });
 
       document.getElementById('sidebarCollapse').addEventListener('click', () => {
         state.showSidebar = false;
-        render();
-      });
-
-      els.sidebarReveal.addEventListener('click', () => {
-        state.showSidebar = true;
         render();
       });
 

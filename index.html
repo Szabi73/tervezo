@@ -565,27 +565,22 @@
                 </div>
               ) : null}
 
-              {!showSidebar && (
-                <button
-                  type="button"
-                  onClick={() => setShowSidebar(true)}
-                  className="absolute left-0 top-6 lg:top-1/2 -translate-x-1/2 lg:-translate-y-1/2 bg-slate-800 text-white px-3 py-2 rounded-r-xl shadow-2xl flex items-center gap-2 text-sm font-semibold"
-                  aria-label="Menü megnyitása"
-                >
-                  <MenuIcon size={18} /> Menü
-                </button>
-              )}
-
               <div className="flex-1 flex flex-col">
                 <div className="bg-gradient-to-r from-purple-700 to-indigo-700 text-white p-4">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      {isMobile && (
+                      {(isMobile || (!isMobile && !showSidebar)) && (
                         <button
-                          onClick={() => setShowSidebar(!showSidebar)}
-                          className="p-2 bg-white/20 rounded-lg"
+                          onClick={() =>
+                            isMobile ? setShowSidebar((prev) => !prev) : setShowSidebar(true)
+                          }
+                          className={`p-2 bg-white/20 rounded-lg ${
+                            isMobile ? '' : 'flex items-center gap-2 text-sm font-semibold'
+                          }`}
+                          aria-label="Menü"
                         >
                           <MenuIcon size={20} />
+                          {!isMobile && <span>Menü</span>}
                         </button>
                       )}
                       <div>
