@@ -68,6 +68,12 @@
         </IconBase>
       );
 
+      const ChevronLeftIcon = (props) => (
+        <IconBase {...props}>
+          <polyline points="15 18 9 12 15 6" />
+        </IconBase>
+      );
+
       const SettingsIcon = (props) => (
         <IconBase {...props}>
           <circle cx="12" cy="12" r="3" />
@@ -253,6 +259,10 @@
         const [showNewPersonModal, setShowNewPersonModal] = React.useState(false);
         const [currentPerson, setCurrentPerson] = React.useState(savedPersons[2]);
         const [searchTerm, setSearchTerm] = React.useState('');
+
+        React.useEffect(() => {
+          setShowSidebar(!isMobile);
+        }, [isMobile]);
 
         const filteredPersons = React.useMemo(
           () =>
@@ -495,21 +505,31 @@
             )}
 
             <div
-              className={`mx-auto bg-white shadow-2xl ${
+              className={`relative mx-auto bg-white shadow-2xl ${
                 isMobile ? 'max-w-sm' : 'max-w-7xl'
               } min-h-screen flex flex-col lg:flex-row`}
             >
-              {(!isMobile || showSidebar) ? (
+              {showSidebar ? (
                 <div className="w-64 bg-gradient-to-b from-slate-800 to-slate-900 text-white flex-shrink-0">
                   <div className="p-4 border-b border-slate-700">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
-                        <UserIcon size={24} />
+                    <div className="flex items-center gap-3 justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
+                          <UserIcon size={24} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-sm truncate">{currentPerson.name}</p>
+                          <p className="text-xs text-gray-400 truncate">{currentPerson.date}</p>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-sm truncate">{currentPerson.name}</p>
-                        <p className="text-xs text-gray-400 truncate">{currentPerson.date}</p>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setShowSidebar(false)}
+                        className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition"
+                        aria-label="Menü elrejtése"
+                      >
+                        <ChevronLeftIcon size={16} />
+                      </button>
                     </div>
                   </div>
                   <nav className="p-2 space-y-1">
@@ -544,6 +564,17 @@
                   </nav>
                 </div>
               ) : null}
+
+              {!showSidebar && (
+                <button
+                  type="button"
+                  onClick={() => setShowSidebar(true)}
+                  className="absolute left-0 top-6 lg:top-1/2 -translate-x-1/2 lg:-translate-y-1/2 bg-slate-800 text-white px-3 py-2 rounded-r-xl shadow-2xl flex items-center gap-2 text-sm font-semibold"
+                  aria-label="Menü megnyitása"
+                >
+                  <MenuIcon size={18} /> Menü
+                </button>
+              )}
 
               <div className="flex-1 flex flex-col">
                 <div className="bg-gradient-to-r from-purple-700 to-indigo-700 text-white p-4">

@@ -183,21 +183,37 @@
 
       <div
         id="mainContainer"
-        class="mx-auto bg-white shadow-2xl max-w-sm min-h-screen flex"
+        class="relative mx-auto bg-white shadow-2xl max-w-sm min-h-screen flex"
       >
+        <button
+          id="sidebarReveal"
+          class="hidden absolute left-0 top-6 lg:top-1/2 -translate-x-1/2 lg:-translate-y-1/2 bg-slate-800 text-white px-3 py-2 rounded-r-xl shadow-2xl flex items-center gap-2 text-sm font-semibold"
+          aria-label="Menü megnyitása"
+        >
+          ☰ Menü
+        </button>
         <aside
           id="sidebar"
           class="w-64 bg-gradient-to-b from-slate-800 to-slate-900 text-white flex-shrink-0 hidden"
         >
           <div class="p-4 border-b border-slate-700">
-            <div class="flex items-center gap-3">
-              <div class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
-                <span aria-hidden="true">👤</span>
+            <div class="flex items-center gap-3 justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
+                  <span aria-hidden="true">👤</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p id="sidebarPersonName" class="font-semibold text-sm truncate"></p>
+                  <p id="sidebarPersonDate" class="text-xs text-gray-400 truncate"></p>
+                </div>
               </div>
-              <div class="flex-1 min-w-0">
-                <p id="sidebarPersonName" class="font-semibold text-sm truncate"></p>
-                <p id="sidebarPersonDate" class="text-xs text-gray-400 truncate"></p>
-              </div>
+              <button
+                id="sidebarCollapse"
+                class="p-2 rounded-full bg-white/10 hover:bg-white/20 transition"
+                aria-label="Menü elrejtése"
+              >
+                ◀
+              </button>
             </div>
           </div>
           <nav class="p-2 space-y-1">
@@ -540,6 +556,7 @@
         desktopBtn: document.getElementById('desktopBtn'),
         mainContainer: document.getElementById('mainContainer'),
         sidebar: document.getElementById('sidebar'),
+        sidebarReveal: document.getElementById('sidebarReveal'),
         menuToggle: document.getElementById('menuToggle'),
         desktopToolbar: document.getElementById('desktopToolbar'),
         settingsPanel: document.getElementById('settingsPanel'),
@@ -581,13 +598,11 @@
       }
 
       function renderLayout() {
-        els.mainContainer.className = `mx-auto bg-white shadow-2xl min-h-screen flex ${
-          state.isMobile ? 'max-w-sm' : 'max-w-7xl'
+        els.mainContainer.className = `relative mx-auto bg-white shadow-2xl min-h-screen flex ${
+          state.isMobile ? 'flex-col max-w-sm' : 'flex-row max-w-7xl'
         }`;
-        if (!state.isMobile) {
-          state.showSidebar = true;
-        }
         els.sidebar.classList.toggle('hidden', !state.showSidebar);
+        els.sidebarReveal.classList.toggle('hidden', state.showSidebar);
         els.menuToggle.classList.toggle('hidden', !state.isMobile);
         els.desktopToolbar.classList.toggle('hidden', state.isMobile);
         els.rightPanel.classList.toggle('hidden', state.isMobile);
@@ -855,6 +870,16 @@
 
       els.menuToggle.addEventListener('click', () => {
         state.showSidebar = !state.showSidebar;
+        render();
+      });
+
+      document.getElementById('sidebarCollapse').addEventListener('click', () => {
+        state.showSidebar = false;
+        render();
+      });
+
+      els.sidebarReveal.addEventListener('click', () => {
+        state.showSidebar = true;
         render();
       });
 
